@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#14171c">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>NIKEN · Qualidade e Processos</title>
+<style>
+:root{--bg:#eef1f5;--card:#fff;--tx:#1b1f27;--mu:#5b6574;--bd:#c4cad3;--in:#f5f7fa;--hd:#14171c;--ac:#E80020;--sky:#0b8fd6;--ok:#0b8fd6;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1115;--card:#181c22;--tx:#e8ebf0;--mu:#9aa4b2;--bd:#343b46;--in:#222831;--hd:#07090c;--sky:#38b6ff;--ok:#38b6ff;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1115;--card:#181c22;--tx:#e8ebf0;--mu:#9aa4b2;--bd:#343b46;--in:#222831;--hd:#07090c;--sky:#38b6ff;--ok:#38b6ff;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{background:var(--bg);color:var(--tx);min-height:100vh}
+header{background:var(--hd);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:3px solid var(--ac)}
+.logo{background:#fff;color:#14171c;font-weight:900;border-radius:5px;padding:1px 8px;font-size:18px}
+header b{letter-spacing:2px;font-size:18px}
+header small{margin-left:auto;opacity:.7;font-size:12px}
+nav{display:flex;background:var(--hd);overflow-x:auto}
+nav button{flex:1;min-width:110px;background:none;border:0;border-bottom:3px solid transparent;color:#9aa4b2;padding:12px 8px;font-size:13px;font-weight:600;cursor:pointer}
+nav button.on{color:#fff;border-bottom-color:var(--sky)}
+main{padding:14px;max-width:1280px;margin:0 auto}
+section{display:none}section.on{display:block}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.bar h2{font-size:16px;flex:1;min-width:200px}
+.btn{border:0;border-radius:7px;padding:9px 14px;font-size:13px;font-weight:700;cursor:pointer;color:#fff;background:var(--sky)}
+.btn.red{background:var(--ac)}.btn.gray{background:#566070}
+.head{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:12px;background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:10px}
+.head label{font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;display:flex;flex-direction:column;gap:3px}
+input,select{width:100%;background:var(--in);color:var(--tx);border:1px solid var(--bd);border-radius:5px;padding:7px 6px;font-size:13px}
+input:focus,select:focus{outline:2px solid var(--sky);border-color:transparent}
+.wrap{overflow-x:auto;background:var(--card);border:1px solid var(--bd);border-radius:8px}
+table{border-collapse:collapse;width:100%}
+th,td{border:1px solid var(--bd);padding:4px;font-size:12px}
+th{background:var(--in);color:var(--mu);text-transform:uppercase;font-size:11px;padding:7px 4px}
+td input,td select{min-width:46px;text-align:center}
+td.l input{text-align:left;min-width:150px}
+.sm input{min-width:38px;padding:7px 2px}
+input.nok{color:var(--ac);font-weight:800;border-color:var(--ac)}
+input.isok{color:var(--ok);font-weight:700}
+.x{background:none;border:0;color:var(--ac);font-size:16px;cursor:pointer;padding:4px 8px}
+.ta{background:none;border:1px solid var(--bd);color:var(--sky);border-radius:5px;font-size:11px;font-weight:700;padding:6px;cursor:pointer;white-space:nowrap}
+.hint{font-size:12px;color:var(--mu);margin-top:8px}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#14171c;color:#fff;border-left:4px solid var(--sky);padding:11px 18px;border-radius:7px;font-size:13px;display:none;z-index:9}
+@media print{header,nav,.bar,.x,.ta,.hint{display:none!important}section{display:block!important;page-break-after:always}body{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+<header><span class="logo">N</span><b>NIKEN</b><small>Qualidade e Processos</small></header>
+<nav id="tabs">
+<button class="on" data-t="rip">📄 RIP</button>
+<button data-t="itp">📋 ITP</button>
+<button data-t="plano">📊 Plano de Controle</button>
+</nav>
+<main>
+<section id="rip" class="on"></section>
+<section id="itp"></section>
+<section id="plano"></section>
+</main>
+<div id="toast"></div>
+<script>
+var KEY='niken-qualidade-v1';
+function hoje(){var d=new Date();return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear()}
+function agora(){var d=new Date();return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)}
+function ripRow(h,t){return{d:hoje(),h:h||agora(),m:'MS06',t:t||'I',i:['OK','OK','OK','OK','OK','OK','OK','OK','OK','OK'],s:'APR',re:''}}
+function def(){return{
+ rip:{h:{pc:'PC-29320',rev:'01',eq:'PAQ-01 / CAL-02'},rows:[ripRow('06:00','LM'),ripRow('08:00','I')]},
+ itp:{h:{cod:'293200',nome:'RINF CERNIERA PORTELLONE SX',rev:'11',elab:'30/12/16',cli:'FIAT',m1:'MS 006',m2:'MS 007'},
+  prep:[{k:'PROGRAMA',a:'1',b:'16'},{k:'PRÉ PRESSÃO',a:'700',b:'700'},{k:'2° POTÊNCIA',a:'15 kA',b:'15 kA'}],
+  proc:[{t:'Pegar peça e posicionar no pino guia do eletrodo.'},{t:'Acionar a máquina através do botão bimanual.'},{t:'Garantir a segurança do operador e a qualidade da solda.'}]},
+ plano:{h:{cli:'FIAT',peca:'520589100',nome:'RINF CERNIERA',data:'17/02/2023'},
+  rows:[{d:'Resistir ao teste axial',e:'380 kgf',m:'CÉLULA DE CARGA',f:'1 PC LM / 1 PC FIM DE TURNO'},{d:'Disposição do processo',e:'Mínimo 380 kgf',m:'VISUAL',f:'100% DAS PEÇAS'}]}}}
+var D;
+try{D=JSON.parse(localStorage.getItem(KEY))}catch(e){D=null}
+if(!D||!D.rip)D=def();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){}}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')}
+function get(p){return p.split('.').reduce(function(o,k){return o[k]},D)}
+function set(p,v){var a=p.split('.'),l=a.pop();a.reduce(function(o,k){return o[k]},D)[l]=v}
+function I(p,cls){return '<input data-p="'+p+'" value="'+esc(get(p))+'"'+(cls?' class="'+cls+'"':'')+'>'}
+function F(p,lb){return '<label>'+lb+I(p)+'</label>'}
+function S(p,opts){return '<select data-p="'+p+'">'+opts.map(function(o){return '<option'+(get(p)===o?' selected':'')+'>'+o+'</option>'}).join('')+'</select>'}
+function X(path,i){return '<td><button class="x" data-del="'+path+'" data-i="'+i+'">✕</button></td>'}
+function itemCls(v){v=String(v).trim().toUpperCase();return v==='OK'?'isok':(v==='NOK'?'nok':'')}
+
+function rRip(){
+ var h='<div class="bar"><h2>REGISTRO DE INSPEÇÃO NO PROCESSO (RIP)</h2><button class="btn" data-add="rip">＋ Linha</button><button class="btn gray" onclick="window.print()">🖨 Imprimir</button><button class="btn red" data-copy="rip">📋 Copiar</button></div>';
+ h+='<div class="head">'+F('rip.h.pc','N° Plano de Controle')+F('rip.h.rev','Rev')+F('rip.h.eq','N° equip. de medida')+'</div>';
+ h+='<div class="wrap sm"><table id="t-rip"><tr><th>Data</th><th>Hora</th><th>Maq</th><th>Tipo</th>';
+ for(var k=1;k<=10;k++)h+='<th>'+('0'+k).slice(-2)+'</th>';
+ h+='<th>Status</th><th>RE / Assin.</th><th></th><th></th></tr>';
+ D.rip.rows.forEach(function(r,n){var b='rip.rows.'+n;
+  h+='<tr><td>'+I(b+'.d')+'</td><td>'+I(b+'.h')+'</td><td>'+I(b+'.m')+'</td><td>'+S(b+'.t',['LM','I','A'])+'</td>';
+  for(var k=0;k<10;k++)h+='<td>'+I(b+'.i.'+k,itemCls(r.i[k]))+'</td>';
+  h+='<td>'+S(b+'.s',['APR','REP','RNC'])+'</td><td>'+I(b+'.re')+'</td><td><button class="ta" data-allok="'+n+'">Tudo OK</button></td>'+X('rip.rows',n)+'</tr>'});
+ h+='</table></div><p class="hint">LM = liberação de máquina · I = inspeção do operador · A = auditor/facilitador. Digite OK ou NOK nos itens. Tudo fica salvo neste aparelho.</p>';
+ return h}
+
+function rItp(){
+ var h='<div class="bar"><h2>ITP · INSTRUÇÃO DE TRABALHO PADRÃO</h2><button class="btn gray" onclick="window.print()">🖨 Imprimir</button><button class="btn red" data-copy="itp">📋 Copiar</button></div>';
+ h+='<div class="head">'+F('itp.h.cod','Cód. Niken')+F('itp.h.nome','Nome')+F('itp.h.rev','Revisão')+F('itp.h.elab','Elaborador/Data')+F('itp.h.cli','Cliente')+'</div>';
+ h+='<div class="bar"><h2 style="font-size:14px">Informação para preparação</h2><button class="btn" data-add="prep">＋ Linha</button></div>';
+ h+='<div class="wrap"><table id="t-itp"><tr><th>Parâmetro</th><th>'+I('itp.h.m1')+'</th><th>'+I('itp.h.m2')+'</th><th></th></tr>';
+ D.itp.prep.forEach(function(r,n){var b='itp.prep.'+n;h+='<tr><td class="l">'+I(b+'.k')+'</td><td>'+I(b+'.a')+'</td><td>'+I(b+'.b')+'</td>'+X('itp.prep',n)+'</tr>'});
+ h+='</table></div>';
+ h+='<div class="bar" style="margin-top:14px"><h2 style="font-size:14px">Descrição do processo</h2><button class="btn" data-add="proc">＋ Etapa</button></div>';
+ h+='<div class="wrap"><table id="t-itp2"><tr><th style="width:40px">#</th><th>Descrição</th><th></th></tr>';
+ D.itp.proc.forEach(function(r,n){h+='<tr><td style="text-align:center">'+(n+1)+'</td><td class="l">'+I('itp.proc.'+n+'.t')+'</td>'+X('itp.proc',n)+'</tr>'});
+ h+='</table></div>';return h}
+
+function rPlano(){
+ var h='<div class="bar"><h2>PLANO DE CONTROLE DE PROCESSO</h2><button class="btn" data-add="plano">＋ Item</button><button class="btn gray" onclick="window.print()">🖨 Imprimir</button><button class="btn red" data-copy="plano">📋 Copiar</button></div>';
+ h+='<div class="head">'+F('plano.h.cli','Cliente')+F('plano.h.peca','N° Peça')+F('plano.h.nome','Nome')+F('plano.h.data','Data emissão')+'</div>';
+ h+='<div class="wrap"><table id="t-plano"><tr><th style="width:40px">IT</th><th>Descrição / Característica</th><th>Especificação</th><th>Método de avaliação</th><th>Tamanho / Frequência</th><th></th></tr>';
+ D.plano.rows.forEach(function(r,n){var b='plano.rows.'+n;h+='<tr><td style="text-align:center">'+('0'+(n+1)).slice(-2)+'</td><td class="l">'+I(b+'.d')+'</td><td class="l">'+I(b+'.e')+'</td><td class="l">'+I(b+'.m')+'</td><td class="l">'+I(b+'.f')+'</td>'+X('plano.rows',n)+'</tr>'});
+ h+='</table></div>';return h}
+
+function render(){
+ document.getElementById('rip').innerHTML=rRip();
+ document.getElementById('itp').innerHTML=rItp();
+ document.getElementById('plano').innerHTML=rPlano();
+}
+render();
+
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(function(){t.style.display='none'},2200)}
+function tsv(id){
+ var out='',sec=document.getElementById(id);
+ sec.querySelectorAll('.head label').forEach(function(l){out+=l.firstChild.textContent+'\t'+l.querySelector('input').value+'\n'});
+ sec.querySelectorAll('table').forEach(function(t){
+  for(var r=0;r<t.rows.length;r++){var row=[];
+   for(var c=0;c<t.rows[r].cells.length;c++){var cell=t.rows[r].cells[c];
+    if(cell.querySelector('button')&&!cell.querySelector('input'))continue;
+    if(cell.querySelector('button')&&cell.querySelector('input')===null)continue;
+    var el=cell.querySelector('input,select');row.push((el?el.value:cell.innerText).replace(/\n/g,' ').trim())}
+   out+=row.join('\t')+'\n'}
+  out+='\n'});
+ return out}
+function copia(txt){
+ function fb(){var a=document.createElement('textarea');a.value=txt;document.body.appendChild(a);a.select();try{document.execCommand('copy');toast('✓ Dados copiados')}catch(e){toast('Não foi possível copiar')}a.remove()}
+ try{navigator.clipboard.writeText(txt).then(function(){toast('✓ Dados copiados')},fb)}catch(e){fb()}}
+
+document.addEventListener('input',function(e){
+ var p=e.target.dataset&&e.target.dataset.p;if(!p)return;
+ set(p,e.target.value);save();
+ if(/\.i\.\d$/.test(p)){e.target.classList.remove('nok','isok');var c=itemCls(e.target.value);if(c)e.target.classList.add(c)}
+});
+document.addEventListener('click',function(e){
+ var b=e.target.closest('button');if(!b)return;
+ if(b.dataset.t){document.querySelectorAll('nav button,main section').forEach(function(x){x.classList.remove('on')});b.classList.add('on');document.getElementById(b.dataset.t).classList.add('on');return}
+ if(b.dataset.copy){copia(tsv(b.dataset.copy));return}
+ if(b.dataset.add){var a=b.dataset.add;
+  if(a==='rip')D.rip.rows.push(ripRow());
+  if(a==='prep')D.itp.prep.push({k:'',a:'',b:''});
+  if(a==='proc')D.itp.proc.push({t:''});
+  if(a==='plano')D.plano.rows.push({d:'',e:'',m:'',f:''});
+  save();render();return}
+ if(b.dataset.del){if(!confirm('Apagar esta linha?'))return;get(b.dataset.del).splice(+b.dataset.i,1);save();render();return}
+ if(b.dataset.allok!==undefined){D.rip.rows[+b.dataset.allok].i=['OK','OK','OK','OK','OK','OK','OK','OK','OK','OK'];save();render()}
+});
+if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(function(){})}
+</script>
+</body>
+</html>
